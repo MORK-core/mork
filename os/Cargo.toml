@@ -1,0 +1,15 @@
+[package]
+name = "os"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "os"
+crate-type = ["bin"]
+
+[dependencies]
+mork-hal = {path = "mork-hal" }
+log = "0.4.26"
+
+[profile.release]
+lto = true       # 启用链接时优化

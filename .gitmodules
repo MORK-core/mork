@@ -1,0 +1,12 @@
+[submodule "os/mork-hal"]
+	path = os/mork-hal
+	url = git@github.com:MORK-core/mork-hal.git
+[submodule "mork-common"]
+	path = mork-common
+	url = git@github.com:MORK-core/mork-common.git
+[submodule "os/mork-mm"]
+	path = os/mork-mm
+	url = git@github.com:MORK-core/mork-mm.git
+[submodule "opensbi"]
+	path = opensbi
+	url = https://github.com/riscv-software-src/opensbi.git
