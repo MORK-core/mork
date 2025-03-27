@@ -10,3 +10,9 @@
 [submodule "opensbi"]
 	path = opensbi
 	url = https://github.com/riscv-software-src/opensbi.git
+[submodule "os/mork-task"]
+	path = os/mork-task
+	url = git@github.com:MORK-core/mork-task.git
+[submodule "mork-root-task"]
+	path = mork-root-task
+	url = git@github.com:MORK-core/mork-root-task.git

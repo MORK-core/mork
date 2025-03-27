@@ -1,44 +1,34 @@
 cmake_minimum_required(VERSION 3.10)
 project(MORK)
 
-set(CARGO_COMMAND cargo)
+include(${CMAKE_SOURCE_DIR}/config.cmake)
 
-set(CMAKE_BUILD_TYPE Release)
+add_subdirectory(mork-root-task)
 
-set(TARGET riscv64gc-unknown-none-elf)
-set(CROSS_COMPILE_PREFIX riscv64-unknown-linux-gnu-)
-set(OBJCOPY rust-objcopy --binary-architecture=riscv64)
-
+set(ROOT_TASK_BIN ${CMAKE_BINARY_DIR}/mork-root-task.bin)
 set(OS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/os)
+set(GEN_PATH "${OS_DIR}/src/auto_gen.rs")
 set(LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/os/linker-qemu.ld")
 set(RUSTFLAGS "-C link-arg=-T${LINKER_SCRIPT} -C relocation-model=static")
-
-set(CARGO_ARGS "--release" "--target" "${TARGET}")
+set(OS_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/os")
 
 add_custom_target(os_build ALL
-    COMMAND ${CMAKE_COMMAND} -E env "RUSTFLAGS=${RUSTFLAGS}" ${CARGO_COMMAND} build ${CARGO_ARGS}
+    COMMAND ${CMAKE_COMMAND} -E
+    env "RUSTFLAGS=${RUSTFLAGS}" "CARGO_TARGET_DIR=${OS_TARGET_DIR}"
+    "ROOT_TASK_BIN=${ROOT_TASK_BIN}" "GEN_PATH=${GEN_PATH}"
+    ${CARGO_COMMAND} build ${CARGO_ARGS}
     WORKING_DIRECTORY ${OS_DIR}
+    DEPENDS root_task_target
     COMMENT "Building OS library"
 )
 
-set(OS_FILE ${OS_DIR}/target/${TARGET}/release/os)
-
-add_custom_command(
-    OUTPUT ${OS_FILE}
-    COMMAND ${CMAKE_COMMAND} -E echo "Waiting for Rust library to build..."
-    DEPENDS os_build
-)
-
-add_custom_command(
-    OUTPUT ${OS_FILE}
-    COMMAND ${CMAKE_COMMAND} -E echo "Waiting for Rust library to build..."
-    DEPENDS os_build
-)
+set(OS_FILE ${OS_TARGET_DIR}/${TARGET}/${CARGO_BUILD_TYPE}/os)
 
 add_custom_command(TARGET os_build POST_BUILD
     COMMAND ${OBJCOPY} --strip-all -O binary ${OS_FILE} ${OS_FILE}.bin
     COMMAND ${CMAKE_COMMAND} -E copy ${OS_FILE}.bin ${CMAKE_BINARY_DIR}
-    COMMENT "Stripping symbols from my_app"
+    COMMENT "Stripping symbols from os_build"
+    DEPENDS os_build
 )
 
 
