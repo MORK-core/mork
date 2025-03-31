@@ -21,4 +21,5 @@ fn main() {
 
     // 告诉 Cargo 如果 ROOT_TASK_BIN 发生变化，重新运行 build.rs
     println!("cargo:rerun-if-env-changed=ROOT_TASK_BIN");
+    println!("cargo:rerun-if-changed={}", root_task_bin);
 }

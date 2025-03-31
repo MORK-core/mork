@@ -16,3 +16,9 @@
 [submodule "mork-root-task"]
 	path = mork-root-task
 	url = git@github.com:MORK-core/mork-root-task.git
+[submodule "mork-user-lib"]
+	path = mork-user-lib
+	url = git@github.com:MORK-core/mork-user-lib.git
+[submodule "os/mork-syscall"]
+	path = os/mork-syscall
+	url = git@github.com:CtrlZ233/mork-syscall.git

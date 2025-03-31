@@ -1,0 +1,12 @@
+[package]
+name = "mork-kernel-state"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
+spin = "0.9.8"
+log = "0.4"
+mork-task = { path = "../mork-task" }
+mork-hal = { path = "../mork-hal" }
+mork-common = { path = "../../mork-common" }

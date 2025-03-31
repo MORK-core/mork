@@ -11,12 +11,11 @@ crate-type = ["bin"]
 mork-common = {path = "../mork-common"}
 mork-hal = { path = "mork-hal" }
 mork-mm = { path = "mork-mm" }
-lazy_init = { git = "https://github.com/Starry-OS/lazy_init.git" }
-lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
+mork-kernel-state = { path = "mork-kernel-state" }
+mork-syscall = { path = "mork-syscall" }
 mork-task = { path = "mork-task" }
 log = "0.4"
 elf = { version = "0.7.4", default-features = false }
-spin = "0.9.8"
 
 [profile.release]
 lto = true
