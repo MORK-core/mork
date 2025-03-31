@@ -21,4 +21,4 @@
 	url = git@github.com:MORK-core/mork-user-lib.git
 [submodule "os/mork-syscall"]
 	path = os/mork-syscall
-	url = git@github.com:CtrlZ233/mork-syscall.git
+  url = git@github.com:MORK-core/mork-syscall.git
