@@ -22,3 +22,6 @@
 [submodule "os/mork-syscall"]
 	path = os/mork-syscall
   url = git@github.com:MORK-core/mork-syscall.git
+[submodule "os/mork-capability"]
+	path = os/mork-capability
+	url = git@github.com:MORK-core/mork-capability.git

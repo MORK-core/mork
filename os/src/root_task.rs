@@ -7,17 +7,19 @@ use mork_common::utils::alignas::{align_down, align_up};
 use elf::abi::{PF_R, PF_W, PF_X, PT_LOAD};
 use elf::ElfBytes;
 use elf::endian::AnyEndian;
+use mork_capability::cap::{CNodeCap, PageTableCap, ThreadCap};
+use mork_capability::cnode::CapNode;
+use mork_common::constants::CNodeSlot;
 use mork_common::mork_kernel_log;
 use mork_common::types::{ResultWithErr, SyncUnsafeCell};
 use mork_hal::context::HALContextTrait;
-use mork_hal::KERNEL_OFFSET;
 use mork_hal::mm::PageTableImpl;
 use mork_kernel_state::KernelSafeAccessData;
 use mork_mm::page_table::MutPageTableWrapper;
 use mork_task::task::TaskContext;
 
-pub fn init(kernel_access_data: &mut KernelSafeAccessData) -> Result<TaskContext ,String> {
-    let mut root_task = TaskContext::new_user_thread();
+pub fn init(kernel_access_data: &mut KernelSafeAccessData) -> Result<Box<TaskContext> ,String> {
+    let mut root_task = Box::new(TaskContext::new_user_thread());
     let (start, end) = mork_hal::get_root_task_region()?;
     mork_kernel_log!(info, "root task image region: {:#x} --> {:#x}", start, end);
     let elf_data = unsafe {
@@ -25,8 +27,21 @@ pub fn init(kernel_access_data: &mut KernelSafeAccessData) -> Result<TaskContext
     };
     let elf = ElfBytes::<AnyEndian>::minimal_parse(elf_data).unwrap();
     let mut page_table = kernel_access_data.kernel_page_table;
-    init_vspace(&mut page_table, &elf, start - KERNEL_OFFSET)?;
+    init_vspace(&mut page_table, &elf, start)?;
     root_task.vspace = Some(Arc::new(SyncUnsafeCell::new(page_table)));
+
+    let cap_node = Arc::new(SyncUnsafeCell::new(CapNode::new()));
+    let cap_node_mut_ref = cap_node.get_mut();
+    let thread_cap = ThreadCap::new(root_task.get_ptr());
+    cap_node_mut_ref[CNodeSlot::CapInitThread as usize] = thread_cap.into_cap();
+    let cnode_cap = CNodeCap::new(cap_node_mut_ref.get_ptr());
+    cap_node_mut_ref[CNodeSlot::CapInitCNode as usize] = cnode_cap.into_cap();
+    let vspace_cap = PageTableCap::new(
+        root_task.vspace.as_ref().unwrap().get().get_ptr()
+    );
+    cap_node_mut_ref[CNodeSlot::CapInitVSpace as usize] = vspace_cap.into_cap();
+    root_task.cspace = Some(cap_node);
+
     mork_kernel_log!(info, "root task entry: {:#x}", elf.ehdr.e_entry);
     root_task.hal_context.set_next_ip(elf.ehdr.e_entry as usize);
     Ok(root_task)
@@ -59,11 +74,11 @@ fn init_vspace(vspace: &mut PageTableImpl, elf: &ElfBytes<AnyEndian>, p_base: us
             let layout = Layout::from_size_align(
                 align_up(segment.p_memsz as usize, PAGE_ALIGN), PAGE_ALIGN)
                 .unwrap();
-            unsafe { alloc(layout) as usize - KERNEL_OFFSET }
+            unsafe { alloc(layout) as usize }
         };
         while vaddr < end {
             root_vspace_wrapper
-                .map_normal_frame(
+                .map_root_task_frame(
                     vaddr,
                     paddr,
                     segment.p_flags & PF_X != 0,

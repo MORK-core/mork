@@ -14,8 +14,12 @@ mork-mm = { path = "mork-mm" }
 mork-kernel-state = { path = "mork-kernel-state" }
 mork-syscall = { path = "mork-syscall" }
 mork-task = { path = "mork-task" }
+mork-capability = { path = "mork-capability" }
 log = "0.4"
 elf = { version = "0.7.4", default-features = false }
+riscv = { git = "https://github.com/duskmoon314/riscv", branch = "extN", features = [
+    "inline-asm",
+] }
 
 [profile.release]
 lto = true

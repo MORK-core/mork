@@ -3,7 +3,6 @@
 
 extern crate alloc;
 
-use alloc::boxed::Box;
 use mork_common::mork_kernel_log;
 use mork_kernel_state::KERNEL_ACCESS_DATA;
 use mork_task::task_state::ThreadStateEnum;
@@ -22,7 +21,7 @@ pub extern "C" fn rust_main(dtb_addr: usize) -> ! {
     match root_task::init(&mut kernel_access_data) {
         Ok(mut root_task) => {
             root_task.state = ThreadStateEnum::ThreadStateRestart;
-            kernel_access_data.scheduler.enqueue(Box::new(root_task));
+            kernel_access_data.scheduler.enqueue(root_task);
         }
         Err(err) => {
             mork_kernel_log!(error, "{:?}", err);
@@ -40,7 +39,7 @@ pub extern "C" fn rust_main(dtb_addr: usize) -> ! {
     }
     let hal_context_pointer = kernel_access_data.schedule();
     drop(kernel_access_data);
-    mork_hal::timer::set_next_trigger();
+    // mork_hal::timer::set_next_trigger();
     mork_hal::return_user(hal_context_pointer);
     mork_hal::shutdown(false)
 }
