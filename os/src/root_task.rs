@@ -1,4 +1,4 @@
-use alloc::alloc::alloc;
+use alloc::alloc::alloc_zeroed;
 use alloc::boxed::Box;
 use alloc::string::{String, ToString};
 use alloc::sync::Arc;
@@ -73,7 +73,7 @@ fn init_vspace(vspace: &mut PageTable, elf: &ElfBytes<AnyEndian>, p_base: usize)
             let layout = Layout::from_size_align(
                 align_up(segment.p_memsz as usize, PAGE_ALIGN), PAGE_ALIGN)
                 .unwrap();
-            unsafe { alloc(layout) as usize }
+            unsafe { alloc_zeroed(layout) as usize }
         };
         while vaddr < end {
             root_vspace_wrapper
@@ -94,7 +94,7 @@ pub fn init_idle_thread() -> Result<Box<TaskContext>, String> {
     const IDLE_THREAD_STACK_SIZE: usize = 4096;
     const STACK_ALIGN: usize = 4096;
     let layout = Layout::from_size_align(IDLE_THREAD_STACK_SIZE, STACK_ALIGN).unwrap();
-    let sp = unsafe { alloc(layout) };
+    let sp = unsafe { alloc_zeroed(layout) };
     if sp.is_null() {
         return Err("could not allocate stack memory".to_string());
     }
