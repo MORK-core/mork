@@ -13,9 +13,8 @@ use mork_common::constants::CNodeSlot;
 use mork_common::mork_kernel_log;
 use mork_common::types::{ResultWithErr, SyncUnsafeCell};
 use mork_hal::context::HALContextTrait;
-use mork_hal::mm::PageTableImpl;
 use mork_kernel_state::KernelSafeAccessData;
-use mork_mm::page_table::MutPageTableWrapper;
+use mork_mm::page_table::{MutPageTableWrapper, PageTable};
 use mork_task::task::TaskContext;
 
 pub fn init(kernel_access_data: &mut KernelSafeAccessData) -> Result<Box<TaskContext> ,String> {
@@ -47,7 +46,7 @@ pub fn init(kernel_access_data: &mut KernelSafeAccessData) -> Result<Box<TaskCon
     Ok(root_task)
 }
 
-fn init_vspace(vspace: &mut PageTableImpl, elf: &ElfBytes<AnyEndian>, p_base: usize) -> ResultWithErr<String> {
+fn init_vspace(vspace: &mut PageTable, elf: &ElfBytes<AnyEndian>, p_base: usize) -> ResultWithErr<String> {
     let mut root_vspace_wrapper = MutPageTableWrapper::new(vspace);
     let segments = elf.segments().expect("could not parse ELF segments");
     const PAGE_ALIGN: usize = 4096;

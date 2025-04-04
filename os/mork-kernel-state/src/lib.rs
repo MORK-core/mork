@@ -8,14 +8,14 @@ use mork_common::mork_kernel_log;
 use mork_hal::context::{HALContext, HALContextTrait};
 use mork_task::schedule::Scheduler;
 use mork_task::task::TaskContext;
-use mork_hal::mm::PageTableImpl;
+use mork_mm::page_table::PageTable;
 
 lazy_static! {
     pub static ref KERNEL_ACCESS_DATA: Mutex<KernelSafeAccessData> = Mutex::new(KernelSafeAccessData::new());
 }
 
 pub struct KernelSafeAccessData {
-    pub kernel_page_table: PageTableImpl,
+    pub kernel_page_table: PageTable,
     pub scheduler: Scheduler,
     pub current_task: Option<Box<TaskContext>>,
     pub idle_task: Option<Box<TaskContext>>,
@@ -24,7 +24,7 @@ pub struct KernelSafeAccessData {
 impl KernelSafeAccessData {
     fn new() -> Self {
         Self {
-            kernel_page_table: PageTableImpl::new(),
+            kernel_page_table: PageTable::new(),
             scheduler: Scheduler::new(),
             current_task: None,
             idle_task: None,
@@ -34,7 +34,7 @@ impl KernelSafeAccessData {
     pub fn schedule(&mut self) -> *const HALContext {
         let current =
             if let Some(task) = self.scheduler.dequeue() {
-                task.vspace.as_ref().unwrap().get().active();
+                task.vspace.as_ref().unwrap().get().page_table_impl.active();
                 task
             } else {
                 mork_kernel_log!(info, "schedule idle thread");
