@@ -1,7 +1,7 @@
-use riscv::register::{scause, stval};
 use mork_common::syscall::message_info::MessageInfo;
 use mork_common::syscall::Syscall;
 use mork_hal::context::HALContextTrait;
+use mork_hal::trap::TrapCause;
 use mork_kernel_state::KERNEL_ACCESS_DATA;
 
 pub fn init() {
@@ -9,7 +9,7 @@ pub fn init() {
 }
 
 #[unsafe(no_mangle)]
-pub fn handle_syscall(cptr: usize, msg_info: usize, syscall: isize) {
+pub extern "C" fn handle_syscall(cptr: usize, msg_info: usize, syscall: isize) {
     let mut kernel_state = KERNEL_ACCESS_DATA.lock();
     mork_syscall::handle_syscall(
         &mut kernel_state,
@@ -24,11 +24,17 @@ pub fn handle_syscall(cptr: usize, msg_info: usize, syscall: isize) {
 }
 
 #[unsafe(no_mangle)]
+pub extern "C" fn handle_interrupt(cause: TrapCause) {
+    let mut kernel_state = KERNEL_ACCESS_DATA.lock();
+    mork_interrupt::handle_interrupt(&mut kernel_state, cause);
+    let hal_context_pointer = kernel_state.schedule();
+    drop(kernel_state);
+    mork_hal::return_user(hal_context_pointer);
+}
+
+#[unsafe(no_mangle)]
 pub fn handle_exception() {
     let mut kernel_state = KERNEL_ACCESS_DATA.lock();
     let current = kernel_state.current_task.take().unwrap();
-    let scause = scause::read();
-    let stval = stval::read();
-    panic!("scause={:?}, stval={:#x}, bad instruction: {:#x}",
-        scause.cause(), stval, current.hal_context.get_fault_ip());
+    panic!("bad instruction: {:#x}", current.hal_context.get_fault_ip());
 }

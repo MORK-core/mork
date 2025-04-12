@@ -21,13 +21,14 @@ pub extern "C" fn rust_main(dtb_addr: usize) -> ! {
     match root_task::init(&mut kernel_access_data) {
         Ok(mut root_task) => {
             root_task.state = ThreadStateEnum::ThreadStateRestart;
-            kernel_access_data.scheduler.enqueue(root_task);
+            kernel_access_data.scheduler.enqueue_back(root_task);
         }
         Err(err) => {
             mork_kernel_log!(error, "{:?}", err);
             mork_hal::shutdown(true)
         }
     }
+
     match root_task::init_idle_thread() {
         Ok(idle_task) => {
             kernel_access_data.idle_task = Some(idle_task);
@@ -39,7 +40,7 @@ pub extern "C" fn rust_main(dtb_addr: usize) -> ! {
     }
     let hal_context_pointer = kernel_access_data.schedule();
     drop(kernel_access_data);
-    // mork_hal::timer::set_next_trigger();
+    mork_hal::timer::set_next_trigger();
     mork_hal::return_user(hal_context_pointer);
     mork_hal::shutdown(false)
 }

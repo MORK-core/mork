@@ -25,3 +25,6 @@
 [submodule "os/mork-capability"]
 	path = os/mork-capability
 	url = git@github.com:MORK-core/mork-capability.git
+[submodule "os/mork-interrupt"]
+	path = os/mork-interrupt
+	url = git@github.com:MORK-core/mork-interrupt.git
