@@ -28,3 +28,6 @@
 [submodule "os/mork-interrupt"]
 	path = os/mork-interrupt
 	url = git@github.com:MORK-core/mork-interrupt.git
+[submodule "mork-tests"]
+	path = mork-tests
+	url = git@github.com:MORK-core/mork-tests.git 

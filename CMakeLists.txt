@@ -3,6 +3,7 @@ project(MORK)
 
 include(${CMAKE_SOURCE_DIR}/config.cmake)
 
+add_subdirectory(mork-tests)
 add_subdirectory(mork-root-task)
 
 set(ROOT_TASK_BIN ${CMAKE_BINARY_DIR}/mork-root-task.bin)

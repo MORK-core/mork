@@ -11,6 +11,7 @@ mod auto_gen;
 mod root_task;
 mod lang_items;
 mod trap;
+mod capability;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn rust_main(dtb_addr: usize) -> ! {
@@ -18,6 +19,7 @@ pub extern "C" fn rust_main(dtb_addr: usize) -> ! {
     let mut kernel_access_data = KERNEL_ACCESS_DATA.lock();
     mork_mm::init(&mut kernel_access_data.kernel_page_table).unwrap_or_else(|err| mork_kernel_log!(error, "{:?}", err));
     trap::init();
+    capability::init();
     match root_task::init(&mut kernel_access_data) {
         Ok(mut root_task) => {
             root_task.state = ThreadStateEnum::ThreadStateRestart;
