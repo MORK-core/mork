@@ -31,3 +31,6 @@
 [submodule "mork-tests"]
 	path = mork-tests
 	url = git@github.com:MORK-core/mork-tests.git 
+[submodule "os/mork-ipc"]
+	path = os/mork-ipc
+	url = git@github.com:MORK-core/mork-ipc.git
