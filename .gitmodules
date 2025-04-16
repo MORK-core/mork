@@ -1,36 +1,36 @@
 [submodule "os/mork-hal"]
 	path = os/mork-hal
-	url = git@github.com:MORK-core/mork-hal.git
+	url = https://github.com/MORK-core/mork-hal.git
 [submodule "mork-common"]
 	path = mork-common
-	url = git@github.com:MORK-core/mork-common.git
+	url = https://github.com/MORK-core/mork-common.git
 [submodule "os/mork-mm"]
 	path = os/mork-mm
-	url = git@github.com:MORK-core/mork-mm.git
+	url = https://github.com/MORK-core/mork-mm.git
 [submodule "opensbi"]
 	path = opensbi
 	url = https://github.com/riscv-software-src/opensbi.git
 [submodule "os/mork-task"]
 	path = os/mork-task
-	url = git@github.com:MORK-core/mork-task.git
+	url = https://github.com/MORK-core/mork-task.git
 [submodule "mork-root-task"]
 	path = mork-root-task
-	url = git@github.com:MORK-core/mork-root-task.git
+	url = https://github.com/MORK-core/mork-root-task.git
 [submodule "mork-user-lib"]
 	path = mork-user-lib
-	url = git@github.com:MORK-core/mork-user-lib.git
+	url = https://github.com/MORK-core/mork-user-lib.git
 [submodule "os/mork-syscall"]
 	path = os/mork-syscall
-  url = git@github.com:MORK-core/mork-syscall.git
+  url = https://github.com/MORK-core/mork-syscall.git
 [submodule "os/mork-capability"]
 	path = os/mork-capability
-	url = git@github.com:MORK-core/mork-capability.git
+	url = https://github.com/MORK-core/mork-capability.git
 [submodule "os/mork-interrupt"]
 	path = os/mork-interrupt
-	url = git@github.com:MORK-core/mork-interrupt.git
+	url = https://github.com/MORK-core/mork-interrupt.git
 [submodule "mork-tests"]
 	path = mork-tests
-	url = git@github.com:MORK-core/mork-tests.git 
+	url = https://github.com/MORK-core/mork-tests.git 
 [submodule "os/mork-ipc"]
 	path = os/mork-ipc
-	url = git@github.com:MORK-core/mork-ipc.git
+	url = https://github.com/MORK-core/mork-ipc.git
