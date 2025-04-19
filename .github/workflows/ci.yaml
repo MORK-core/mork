@@ -1,0 +1,37 @@
+name: Mork Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    # 直接使用公共镜像作为运行容器
+    container:
+      image: ghcr.io/ctrlz233/mork-ci:v1.0
+      options: --user root -e "HOME=/root"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Run tests in container
+        shell: bash -e {0}
+        run: |
+          export HOME=/root
+          export PATH="/home/riscv/bin:$PATH"
+          source "/root/.cargo/env"
+          mkdir build && cd build
+          cmake ..
+          make LOG=INFO
+          timeout 10s qemu-system-riscv64 -bios fw_jump.bin -kernel os.bin -m 512M -nographic > result.txt
+          cat result.txt
+          bash ../check.sh result.txt
+
+      - name: Setup tmate session on failure
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
