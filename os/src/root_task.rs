@@ -30,7 +30,21 @@ pub fn init(kernel_access_data: &mut KernelSafeAccessData) -> Result<Box<TaskCon
 
     mork_kernel_log!(info, "root task entry: {:#x}", elf.ehdr.e_entry);
     root_task.hal_context.set_next_ip(elf.ehdr.e_entry as usize);
+    root_task.hal_context.set_entry_args(find_first_free_vaddr(&elf));
     Ok(root_task)
+}
+
+fn find_first_free_vaddr(elf: &ElfBytes<AnyEndian>) -> usize {
+    let segments = elf.segments().unwrap();
+
+    let mut max_vaddr = 0u64;
+    for phdr in segments.iter() {
+        if phdr.p_type == PT_LOAD {
+            let end_vaddr = phdr.p_vaddr + phdr.p_memsz;
+            max_vaddr = max_vaddr.max(end_vaddr);
+        }
+    }
+    align_up(max_vaddr as usize, 4096)
 }
 
 fn init_vspace(vspace: &mut PageTable, elf: &ElfBytes<AnyEndian>, p_base: usize) -> ResultWithErr<String> {

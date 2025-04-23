@@ -20,4 +20,5 @@ log = "0.4"
 elf = { version = "0.7.4", default-features = false }
 
 [profile.release]
+debug = true
 lto = true
